@@ -1,0 +1,189 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="SchedulerApplication_v2Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="Available">
+    <Key>
+      <PropertyRef Name="CourseId" />
+    </Key>
+    <Property Name="CourseId" Type="int" Nullable="false" />
+    <Property Name="SeatsTaken" Type="int" Nullable="false" />
+    <Property Name="Capacity" Type="int" Nullable="false" />
+    <Property Name="Waitlist" Type="int" />
+  </EntityType>
+  <EntityType Name="ClassTime">
+    <Key>
+      <PropertyRef Name="CourseId" />
+    </Key>
+    <Property Name="CourseId" Type="int" Nullable="false" />
+    <Property Name="Time" Type="time" Precision="7" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Courses">
+    <Key>
+      <PropertyRef Name="CourseId" />
+    </Key>
+    <Property Name="CourseId" Type="int" Nullable="false" />
+    <Property Name="CourseName" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="Credits" Type="int" Nullable="false" />
+    <Property Name="Description" Type="nvarchar" MaxLength="500" />
+  </EntityType>
+  <!--Errors Found During Generation:
+warning 6002: The table/view 'SchedulerApplication_v2.dbo.CoursesEnrolled' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+  <EntityType Name="CoursesEnrolled">
+    <Key>
+      <PropertyRef Name="StudentId" />
+      <PropertyRef Name="CourseId" />
+    </Key>
+    <Property Name="StudentId" Type="int" Nullable="false" />
+    <Property Name="CourseId" Type="int" Nullable="false" />
+  </EntityType>
+  <!--Errors Found During Generation:
+warning 6002: The table/view 'SchedulerApplication_v2.dbo.CoursesTaught' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+  <EntityType Name="CoursesTaught">
+    <Key>
+      <PropertyRef Name="ProfId" />
+      <PropertyRef Name="CourseId" />
+    </Key>
+    <Property Name="ProfId" Type="int" Nullable="false" />
+    <Property Name="CourseId" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Professor">
+    <Key>
+      <PropertyRef Name="ProfId" />
+    </Key>
+    <Property Name="ProfId" Type="int" Nullable="false" />
+    <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Registrar">
+    <Key>
+      <PropertyRef Name="RegistrarId" />
+    </Key>
+    <Property Name="RegistrarId" Type="int" Nullable="false" />
+    <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Student">
+    <Key>
+      <PropertyRef Name="StudentId" />
+    </Key>
+    <Property Name="StudentId" Type="int" Nullable="false" />
+    <Property Name="First" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="Last" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="Email" Type="nvarchar" MaxLength="50" />
+    <Property Name="Phone" Type="nvarchar" MaxLength="50" />
+    <Property Name="Major" Type="nchar" MaxLength="10" />
+  </EntityType>
+  <Association Name="FK_Available_Courses">
+    <End Role="Courses" Type="Self.Courses" Multiplicity="1" />
+    <End Role="Available" Type="Self.Available" Multiplicity="0..1" />
+    <ReferentialConstraint>
+      <Principal Role="Courses">
+        <PropertyRef Name="CourseId" />
+      </Principal>
+      <Dependent Role="Available">
+        <PropertyRef Name="CourseId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_CoursesEnrolled_Courses">
+    <End Role="Courses" Type="Self.Courses" Multiplicity="1" />
+    <End Role="CoursesEnrolled" Type="Self.CoursesEnrolled" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Courses">
+        <PropertyRef Name="CourseId" />
+      </Principal>
+      <Dependent Role="CoursesEnrolled">
+        <PropertyRef Name="CourseId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_CoursesEnrolled_Student">
+    <End Role="Student" Type="Self.Student" Multiplicity="1" />
+    <End Role="CoursesEnrolled" Type="Self.CoursesEnrolled" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Student">
+        <PropertyRef Name="StudentId" />
+      </Principal>
+      <Dependent Role="CoursesEnrolled">
+        <PropertyRef Name="StudentId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_CoursesTaught_ClassTime">
+    <End Role="ClassTime" Type="Self.ClassTime" Multiplicity="1" />
+    <End Role="CoursesTaught" Type="Self.CoursesTaught" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ClassTime">
+        <PropertyRef Name="CourseId" />
+      </Principal>
+      <Dependent Role="CoursesTaught">
+        <PropertyRef Name="CourseId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_CoursesTaught_Courses">
+    <End Role="Courses" Type="Self.Courses" Multiplicity="1" />
+    <End Role="CoursesTaught" Type="Self.CoursesTaught" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Courses">
+        <PropertyRef Name="CourseId" />
+      </Principal>
+      <Dependent Role="CoursesTaught">
+        <PropertyRef Name="CourseId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_CoursesTaught_Professor">
+    <End Role="Professor" Type="Self.Professor" Multiplicity="1" />
+    <End Role="CoursesTaught" Type="Self.CoursesTaught" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Professor">
+        <PropertyRef Name="ProfId" />
+      </Principal>
+      <Dependent Role="CoursesTaught">
+        <PropertyRef Name="ProfId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="SchedulerApplication_v2ModelStoreContainer">
+    <EntitySet Name="Available" EntityType="Self.Available" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="ClassTime" EntityType="Self.ClassTime" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Courses" EntityType="Self.Courses" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Professor" EntityType="Self.Professor" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Registrar" EntityType="Self.Registrar" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Student" EntityType="Self.Student" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="CoursesEnrolled" EntityType="Self.CoursesEnrolled" store:Type="Tables" store:Schema="dbo">
+      <DefiningQuery>SELECT 
+    [CoursesEnrolled].[StudentId] AS [StudentId], 
+    [CoursesEnrolled].[CourseId] AS [CourseId]
+    FROM [dbo].[CoursesEnrolled] AS [CoursesEnrolled]</DefiningQuery>
+    </EntitySet>
+    <EntitySet Name="CoursesTaught" EntityType="Self.CoursesTaught" store:Type="Tables" store:Schema="dbo">
+      <DefiningQuery>SELECT 
+    [CoursesTaught].[ProfId] AS [ProfId], 
+    [CoursesTaught].[CourseId] AS [CourseId]
+    FROM [dbo].[CoursesTaught] AS [CoursesTaught]</DefiningQuery>
+    </EntitySet>
+    <AssociationSet Name="FK_Available_Courses" Association="Self.FK_Available_Courses">
+      <End Role="Courses" EntitySet="Courses" />
+      <End Role="Available" EntitySet="Available" />
+    </AssociationSet>
+    <AssociationSet Name="FK_CoursesEnrolled_Courses" Association="Self.FK_CoursesEnrolled_Courses">
+      <End Role="Courses" EntitySet="Courses" />
+      <End Role="CoursesEnrolled" EntitySet="CoursesEnrolled" />
+    </AssociationSet>
+    <AssociationSet Name="FK_CoursesEnrolled_Student" Association="Self.FK_CoursesEnrolled_Student">
+      <End Role="Student" EntitySet="Student" />
+      <End Role="CoursesEnrolled" EntitySet="CoursesEnrolled" />
+    </AssociationSet>
+    <AssociationSet Name="FK_CoursesTaught_ClassTime" Association="Self.FK_CoursesTaught_ClassTime">
+      <End Role="ClassTime" EntitySet="ClassTime" />
+      <End Role="CoursesTaught" EntitySet="CoursesTaught" />
+    </AssociationSet>
+    <AssociationSet Name="FK_CoursesTaught_Courses" Association="Self.FK_CoursesTaught_Courses">
+      <End Role="Courses" EntitySet="Courses" />
+      <End Role="CoursesTaught" EntitySet="CoursesTaught" />
+    </AssociationSet>
+    <AssociationSet Name="FK_CoursesTaught_Professor" Association="Self.FK_CoursesTaught_Professor">
+      <End Role="Professor" EntitySet="Professor" />
+      <End Role="CoursesTaught" EntitySet="CoursesTaught" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

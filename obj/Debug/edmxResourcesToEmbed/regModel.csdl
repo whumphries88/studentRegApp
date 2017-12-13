@@ -1,0 +1,152 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="SchedulerApplication_v2Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="Available">
+    <Key>
+      <PropertyRef Name="CourseId" />
+    </Key>
+    <Property Name="CourseId" Type="Int32" Nullable="false" />
+    <Property Name="SeatsTaken" Type="Int32" Nullable="false" />
+    <Property Name="Capacity" Type="Int32" Nullable="false" />
+    <Property Name="Waitlist" Type="Int32" />
+    <NavigationProperty Name="Cours" Relationship="Self.FK_Available_Courses" FromRole="Available" ToRole="Courses" />
+  </EntityType>
+  <EntityType Name="ClassTime">
+    <Key>
+      <PropertyRef Name="CourseId" />
+    </Key>
+    <Property Name="CourseId" Type="Int32" Nullable="false" />
+    <Property Name="Time" Type="Time" Nullable="false" Precision="7" />
+    <NavigationProperty Name="CoursesTaughts" Relationship="Self.FK_CoursesTaught_ClassTime" FromRole="ClassTime" ToRole="CoursesTaught" />
+  </EntityType>
+  <EntityType Name="Cours">
+    <Key>
+      <PropertyRef Name="CourseId" />
+    </Key>
+    <Property Name="CourseId" Type="Int32" Nullable="false" />
+    <Property Name="CourseName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Credits" Type="Int32" Nullable="false" />
+    <Property Name="Description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Available" Relationship="Self.FK_Available_Courses" FromRole="Courses" ToRole="Available" />
+    <NavigationProperty Name="CoursesTaughts" Relationship="Self.FK_CoursesTaught_Courses" FromRole="Courses" ToRole="CoursesTaught" />
+    <NavigationProperty Name="Students" Relationship="Self.CoursesEnrolled" FromRole="Courses" ToRole="Student" />
+  </EntityType>
+  <EntityType Name="Professor">
+    <Key>
+      <PropertyRef Name="ProfId" />
+    </Key>
+    <Property Name="ProfId" Type="Int32" Nullable="false" />
+    <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <NavigationProperty Name="CoursesTaughts" Relationship="Self.FK_CoursesTaught_Professor" FromRole="Professor" ToRole="CoursesTaught" />
+  </EntityType>
+  <EntityType Name="Registrar">
+    <Key>
+      <PropertyRef Name="RegistrarId" />
+    </Key>
+    <Property Name="RegistrarId" Type="Int32" Nullable="false" />
+    <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Student">
+    <Key>
+      <PropertyRef Name="StudentId" />
+    </Key>
+    <Property Name="StudentId" Type="Int32" Nullable="false" />
+    <Property Name="First" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Last" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="Phone" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="Major" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+    <NavigationProperty Name="Courses" Relationship="Self.CoursesEnrolled" FromRole="Student" ToRole="Courses" />
+  </EntityType>
+  <EntityType Name="CoursesTaught">
+    <Key>
+      <PropertyRef Name="ProfId" />
+      <PropertyRef Name="CourseId" />
+    </Key>
+    <Property Name="ProfId" Type="Int32" Nullable="false" />
+    <Property Name="CourseId" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="ClassTime" Relationship="Self.FK_CoursesTaught_ClassTime" FromRole="CoursesTaught" ToRole="ClassTime" />
+    <NavigationProperty Name="Cours" Relationship="Self.FK_CoursesTaught_Courses" FromRole="CoursesTaught" ToRole="Courses" />
+    <NavigationProperty Name="Professor" Relationship="Self.FK_CoursesTaught_Professor" FromRole="CoursesTaught" ToRole="Professor" />
+  </EntityType>
+  <Association Name="FK_Available_Courses">
+    <End Role="Courses" Type="Self.Cours" Multiplicity="1" />
+    <End Role="Available" Type="Self.Available" Multiplicity="0..1" />
+    <ReferentialConstraint>
+      <Principal Role="Courses">
+        <PropertyRef Name="CourseId" />
+      </Principal>
+      <Dependent Role="Available">
+        <PropertyRef Name="CourseId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_CoursesTaught_ClassTime">
+    <End Role="ClassTime" Type="Self.ClassTime" Multiplicity="1" />
+    <End Role="CoursesTaught" Type="Self.CoursesTaught" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ClassTime">
+        <PropertyRef Name="CourseId" />
+      </Principal>
+      <Dependent Role="CoursesTaught">
+        <PropertyRef Name="CourseId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_CoursesTaught_Courses">
+    <End Role="Courses" Type="Self.Cours" Multiplicity="1" />
+    <End Role="CoursesTaught" Type="Self.CoursesTaught" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Courses">
+        <PropertyRef Name="CourseId" />
+      </Principal>
+      <Dependent Role="CoursesTaught">
+        <PropertyRef Name="CourseId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_CoursesTaught_Professor">
+    <End Role="Professor" Type="Self.Professor" Multiplicity="1" />
+    <End Role="CoursesTaught" Type="Self.CoursesTaught" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Professor">
+        <PropertyRef Name="ProfId" />
+      </Principal>
+      <Dependent Role="CoursesTaught">
+        <PropertyRef Name="ProfId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="CoursesEnrolled">
+    <End Role="Courses" Type="Self.Cours" Multiplicity="*" />
+    <End Role="Student" Type="Self.Student" Multiplicity="*" />
+  </Association>
+  <EntityContainer Name="SchedulerApplication_v2Entities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Availables" EntityType="Self.Available" />
+    <EntitySet Name="ClassTimes" EntityType="Self.ClassTime" />
+    <EntitySet Name="Courses" EntityType="Self.Cours" />
+    <EntitySet Name="Professors" EntityType="Self.Professor" />
+    <EntitySet Name="Registrars" EntityType="Self.Registrar" />
+    <EntitySet Name="Students" EntityType="Self.Student" />
+    <EntitySet Name="CoursesTaughts" EntityType="Self.CoursesTaught" />
+    <AssociationSet Name="FK_Available_Courses" Association="Self.FK_Available_Courses">
+      <End Role="Courses" EntitySet="Courses" />
+      <End Role="Available" EntitySet="Availables" />
+    </AssociationSet>
+    <AssociationSet Name="FK_CoursesTaught_ClassTime" Association="Self.FK_CoursesTaught_ClassTime">
+      <End Role="ClassTime" EntitySet="ClassTimes" />
+      <End Role="CoursesTaught" EntitySet="CoursesTaughts" />
+    </AssociationSet>
+    <AssociationSet Name="FK_CoursesTaught_Courses" Association="Self.FK_CoursesTaught_Courses">
+      <End Role="Courses" EntitySet="Courses" />
+      <End Role="CoursesTaught" EntitySet="CoursesTaughts" />
+    </AssociationSet>
+    <AssociationSet Name="FK_CoursesTaught_Professor" Association="Self.FK_CoursesTaught_Professor">
+      <End Role="Professor" EntitySet="Professors" />
+      <End Role="CoursesTaught" EntitySet="CoursesTaughts" />
+    </AssociationSet>
+    <AssociationSet Name="CoursesEnrolled" Association="Self.CoursesEnrolled">
+      <End Role="Courses" EntitySet="Courses" />
+      <End Role="Student" EntitySet="Students" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>
